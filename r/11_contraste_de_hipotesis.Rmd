@@ -1,0 +1,184 @@
+---
+title: "XI. Contraste de hipótesis"
+author: "Javier Blanco"
+date: "7/2/2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio XI.1
+
+### En una región se cree que la altura media de sus habitantes mayores de 18 años es 175 cm y se acepta un modelo normal para la distribución de alturas con desviación típica poblacional de 9 cm. Para un nivel de significación del 5 % y a partir de una MAS de tamaño 25 cuya media arroja un valor de 172 cm, ¿qué se puede decir sobre la suposición inicial?
+
+Dada una VA $X$ "altura de los habitantes mayores de edad" tal que $X \sim N(175, 9)$, se desea realizar el siguiente contraste de hipótesis para un nivel de significación del 5 %:
+
+$$
+\left\{
+  \begin{array}{ll} 
+    H_{0}: \mu = 175 \\
+    H_{1}: \mu \ne 175
+  \end{array}
+\right.
+$$
+
+Para ello, se dispone de una MAS con $n = 25$ y $\bar{X} = 172$:
+
+```{r}
+alfa = 0.05
+mu = 175
+sigma = 9
+n = 25
+media = 172
+```
+
+La media muestral se puede tipificar, de manera que, bajo el supuesto de que $H_{0}$ no sea falsa, $d$ sigue una distribución normal tipo:
+
+$$d = \frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt{n}}} \sim N(0, 1)$$
+
+Este estadístico ofrece una medida de la discrepancia entre la evidencia muestral, representada por $\bar{X}$, y la hipótesis nula, representada por $\mu$, por lo que puede ser usado para validar el contraste.
+
+Al tratarse de un contraste bilateral, se reparte el nivel de significación entre ambas colas de la normal tipo para estimar los dos valores críticos que separan la región de aceptación central de las de rechazo periféricas; como se trata de una distribución simétrica, $d_{c_{1}} = -d_{c_{2}}$.
+
+Así, $d_{c_{2}}$ resulta ser el cuantil que deja el 2,5 % de la distribución por encima de sí, es decir, el 0,975 de la probabilidad por debajo:
+
+```{r}
+dc2 = qnorm(1 - alfa/2, mean = 0, sd = 1)
+dc2
+```
+
+Se construye la región de aceptación en forma de vector:
+
+```{r}
+RA = c(-dc2, dc2)
+RA
+```
+
+Por otro lado, el valor observado par el estadístico resulta ser:
+
+```{r}
+d0 = (media - mu)/(sigma/sqrt(n))
+d0
+```
+
+Que, como se puede comprobar, quedaría incluido en la región de aceptación, por lo que no habría razones para rechazar la hipótesis nula:
+
+```{r}
+d0 >= min(RA) & d0 <= max(RA)
+```
+
+# Ejercicio XI.2
+
+### El volumen (en miles de litros) que diariamente venía envasando una planta embotelladora se distribuye según una normal con media 150 y desviación típica 5. Sin embargo, hace tres meses que se han introducido cambios en el proceso productivo y se quiere comprobar si suponen una ventaja comparativa antes de convertirlos en definitivos. Para ello, el jefe de planta ha tomado una MAS de 25 días y ha concluido que el volumen medio embotellado es 153. Suponiendo que la varianza no ha cambiado, se pide plantear un contraste de hipótesis con una significación del 2 % para tomar una decisión.
+
+Dada una VA $X$ "volumen diario en miles de litros" tal que $X \sim N(150, 5)$, se desea realizar el siguiente contraste de hipótesis para un nivel de significación del 2 %:
+
+$$
+\left\{
+  \begin{array}{ll} 
+    H_{0}: \mu = 150 \\
+    H_{1}: \mu > 150
+  \end{array}
+\right.
+$$
+
+Para ello, se dispone de una MAS con $n = 25$ y $\bar{X} = 153$:
+
+```{r}
+alfa = 0.02
+mu = 150
+sigma = 5
+n = 25
+media = 153
+```
+
+El estadístico es análogo al del anterior ejercicio y su valor observado resulta ser:
+
+```{r}
+d0 = (media - mu)/(sigma/sqrt(n))
+d0
+```
+
+En este caso, el contraste se va a resolver mediante el método del p-valor:
+
+$$p = P(d > d_{0}|H_{0}) = P(d > 3)$$
+
+La probabilidad que deja por encima de sí un valor de 3 -el observado para el estadístico- es muy pequeña:
+
+```{r}
+p = 1 - pnorm(d0, mean = 0, sd = 1)
+p
+```
+
+Al ser el p-valor inferior al nivel de significación, se puede rechazar la hipótesis nula en favor de la alternativa:
+
+```{r}
+p < alfa
+```
+
+A modo de comprobación, se puede resolver el contraste de manera análoga al del anterior ejercicio; dado que en esta ocasión se trata de un contraste unilateral, el nivel de significación se concentra por completo en el extremo derecho, por lo que el cuantil que deja por debajo de sí una probabilidad de $1 - \alpha$ resulta ser:
+
+```{r}
+dc = qnorm(1 - alfa, mean = 0, sd = 1)
+dc
+```
+
+El valor observado es superior, por lo que se encuentra en la zona de rechazo:
+
+```{r}
+d0 >= dc
+```
+
+# Ejercicio XI.3
+
+### Los rodamientos esféricos que fabrica una máquina han de tener un diámetro uniforme para ser aptos para su uso. El responsable del taller asegura que la varianza es de 0,0250 cm<sup>2</sup>, pero al tomar una muestra de 50 elementos se obtiene un valor de 0,0272 cm<sup>2</sup>; ¿qué se puede concluir?
+
+Dada una VA $X$ "diámetro de un rodamiento esférico" tal que $X \sim N(\mu, 0,025)$, se desea realizar el siguiente contraste de hipótesis:
+
+$$
+\left\{
+  \begin{array}{ll} 
+    H_{0}: \sigma^{2} = 0,025 \\
+    H_{1}: \sigma^{2} > 0,025
+  \end{array}
+\right.
+$$
+
+Se asume un nivel de significación del 5 %:
+
+```{r}
+alfa = 0.05
+sigma2 = 0.025
+n = 50
+var = 0.0272
+```
+
+Como se desconoce la media poblacional, se ha de recurrir al siguiente estadístico:
+
+$$d = \frac{n-S^{2}}{\sigma^{2}} \sim \chi^{2}_{n-1}$$
+
+Dado que se trata de un contraste unilateral a la derecha, se ha de encontrar el cuantil de la distribución chi-cuadrado que deja tras de sí una probabilidad de $1 - \alpha$ para $n - 1$ grados de libertad:
+
+```{r}
+dc = qchisq(1 - alfa, df = n - 1)
+dc
+```
+
+Bajo la hipótesis nula, el valor esperado resulta ser:
+
+```{r}
+d0 = n * var/sigma2
+d0
+```
+
+Que se encuentra claramente en la región de aceptación, por lo que no se podría rechazar $H_{0}$:
+
+```{r}
+d0 <= dc
+```
+

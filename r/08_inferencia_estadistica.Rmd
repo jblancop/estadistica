@@ -1,0 +1,51 @@
+---
+title: "VIII. Inferencia estadística"
+author: "Javier Blanco"
+date: "23/9/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio VIII.2
+
+### Se quiere realizar un estudio sobre el tiempo semanal dedicado a la lectura en una población de 1.000 habitantes, caracterizada por la siguiente tabla, en la que $i$ son los grupos de edad, $f{i}$ la frecuencia relativa de cada grupo y $\sigma{i}$ su desviación típica.
+
+$i$ | $Edades$ | $f{i}$ | $\sigma{i}$
+----| -------- | ------ | -----------
+1   | < 18     | 0,25   | 0,10
+2   | 19 - 35  | 0,40   | 0,30
+3   | 36 - 55  | 0,20   | 0,50
+4   | > 55     | 0,15   | 0,10
+
+Se ha de realizar un muestreo estratificado mediante afijación óptima para un tamaño muestral de 100; la asignación de unidades por grupo de edad es la siguiente:
+
+```{r}
+n = 100
+
+fi = c(0.25, 0.4, 0.2, 0.15)
+si = c(0.1, 0.3, 0.5, 0.1)
+
+n1 = n * ((fi[1] * si[1])/sum(fi * si))
+
+n1_red = round(n1, 0)
+n1_red
+
+n2 = n * ((fi[2] * si[2])/sum(fi * si))
+
+n2_red = round(n2, 0)
+n2_red
+
+n3 = n * ((fi[3] * si[3])/sum(fi * si))
+
+n3_red = round(n3, 0)
+n3_red
+
+n4 = n * ((fi[4] * si[4])/sum(fi * si))
+
+n4_red = round(n4, 0)
+n4_red
+```
+

@@ -1,0 +1,92 @@
+---
+title: "V. Probabilidad"
+author: "Javier Blanco"
+date: "15/6/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio V.3
+
+### Para un sistema de alarma, la probabilidad de que funcione en caso de peligro es de 0,95, mientras que la de que funcione por error -sin que haya peligro- es de 0,03. Si la probabilidad de que haya peligro es de 0,1:
+
+### a) *Calcular el porcentaje de veces en que, habiendo funcionado la alarma, no hubiese realmente peligro*
+
+Se define un **suceso** $P$, que haya peligro, y su **complementario**, $\bar{P}$, que no lo haya, cuyas **probabilidades** son, respectivamente, $P(P)$ y $P(\bar{P})$:
+
+```{r}
+pP = 0.1
+
+pNoP = 1 - pP
+pNoP
+```
+
+Por otro lado, también se puede definir $F$, que la alarma funcione, y $\bar{F}$, que no funcione, de manera que se tienen las siguientes **probabilidades condicionadas**:
+
+$P(F|P)$ y $P(\bar{F}|P)$:
+
+```{r}
+pFdadoP = 0.95
+
+pNoFdadoP = 1 - pFdadoP
+pNoFdadoP
+```
+
+Y $P(F|\bar{P})$ y $P(\bar{F}|\bar{P})$:
+
+```{r}
+pFdadoNoP = 0.03
+
+pNoFdadoNoP = 1 - pFdadoNoP
+pNoFdadoNoP
+```
+
+Lo que se pide es otra probabilidad condicionada, que se puede determinar a través del **teorema de Bayes** y de la **probabilidad total**; para ello, se definen las siguientes funciones:
+
+```{r}
+total = function(p1, p2, p3, p4)
+{
+  return(p1 * p2 + p3 * p4)
+}
+
+bayes = function(p3, p4, total) 
+{
+  return((p3 * p4)/total)
+}
+```
+
+Así, $P(\bar{P}|F)$, en tanto por ciento, resulta ser:
+
+```{r}
+pNoPdadoF = bayes(pFdadoNoP, pNoP, total(pFdadoP, pP, pFdadoNoP, pNoP))
+
+pNoPdadoF_porc = round(pNoPdadoF * 100, 2)
+pNoPdadoF_porc
+```
+
+
+### b) *Hallar la probabilidad de que haya peligro y la alarma no funcione*
+
+Se trata de la probabilidad de la intersección entre ambos sucesos, $P(P\cap\bar{F})$, que por la definición de probabilidad condicionada resulta ser -en tanto por ciento-:
+
+```{r}
+pPyNoF = pNoFdadoP * pP
+
+pPyNoF_porc = round(pPyNoF * 100, 2)
+pPyNoF_porc
+```
+
+
+### c) *Calcular la probabilidad de que, no habiendo funcionado la alarma, haya peligro*
+
+Es decir, $P(P|\bar{F})$; de nuevo, por el teorema de Bayes y en tanto por ciento:
+
+```{r}
+pPdadoNoF = bayes(pNoFdadoP, pP, 1 - total(pFdadoP, pP, pFdadoNoP, pNoP))
+
+pPdadoNoF_porc = round(pPdadoNoF * 100, 2)
+pPdadoNoF_porc
+```

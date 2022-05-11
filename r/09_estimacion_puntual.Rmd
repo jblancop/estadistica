@@ -1,0 +1,70 @@
+---
+title: "IX. Estimación puntual"
+author: "Javier Blanco"
+date: "2/11/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio IX.1
+
+### Al lanzar un dado se obtiene el espacio equiprobable $S=\{1,2,3,4,5,6\}$. Si $X$ es la VA “doble del número obtenido”, la distribución de probabilidad resulta ser:
+
+$x_{i}$ | $p(x_{i})$ 
+------- | ---------- 
+2       | 1/6     
+4       | 1/6   
+6       | 1/6   
+8       | 1/6      
+10      | 1/6 
+12      | 1/6 
+
+### a) *Calcular la media aritmética*
+
+Se define un vector con los valores a modo de progresión aritmética:
+
+```{r}
+xi = seq(2, 12, 2)
+xi
+```
+
+Cuya longitud es:
+
+```{r}
+n = length(xi)
+n
+```
+
+Y un vector constante para las probabilidades:
+
+```{r}
+pxi = rep(1/6, n)
+pxi
+```
+
+Se comprueba que la suma de las probabilidades da uno:
+
+```{r}
+p = sum(pxi)
+p
+```
+
+La media resulta ser:
+
+```{r}
+mu = sum(xi * pxi)
+mu
+```
+
+
+### b) *Calcular la varianza*
+
+```{r}
+sigma_dos = sum(xi^2 * pxi) - mu^2
+
+sigma_dos_red = round(sigma_dos, 2)
+sigma_dos_red
+```

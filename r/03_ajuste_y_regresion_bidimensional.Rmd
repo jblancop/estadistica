@@ -1,0 +1,54 @@
+---
+title: "III. Ajuste y regresión bidimensional"
+author: "Javier Blanco"
+date: "19/4/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xtable)
+```
+
+# Ejercicio III.1
+
+### Dada la distribución bidimensional de la tabla adjunta, determinar la recta de ajuste de Y en función de X y la bondad de dicho ajuste.
+
+$X$ | 1 | 2 | 3 | 4  | 5  | 6
+----| - | - | - | -- | -- | -- 
+$Y$ | 2 | 5 | 9 | 13 | 17 | 21
+
+En primer lugar, se construyen sendos vectores con los datos del enunciado, que representan a la **variable independiente** $X$ y a la **dependiente** $Y$:
+
+```{r}
+x = c(1, 2, 3, 4, 5, 6)
+y = c(2, 5, 9, 13, 17, 21)
+```
+
+Los **coeficientes** de la **recta de regresión** de $Y$ en función de $X$ se calculan de la siguiente manera:
+
+```{r}
+coeficientes = lm(y~x)
+coeficientes
+```
+
+Siendo *x* la pendiente e *intercept* el punto de corte del eje de ordenadas, de manera que $y = 3,86\cdot x - 2,33$.
+
+La bondad del ajuste, calculada a través del **coeficiente de determinación** $R^{2}$:
+
+```{r}
+r_dos = summary(coeficientes)$r.squared
+
+r_dos_red = round(r_dos, 3)
+r_dos_red
+```
+
+Que indica que el ajuste es excelente.
+
+Si se representa gráficamente el conjunto:
+
+```{r}
+plot(x, y, main = "Ajuste por mínimos cuadrados", xlab = "X", ylab = "Y")
+abline(coeficientes, col = "purple") #Recta de regresión
+```
+

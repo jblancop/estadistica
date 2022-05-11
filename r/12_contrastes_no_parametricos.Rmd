@@ -1,0 +1,274 @@
+---
+title: "XII. Contrastes no paramétricos"
+author: "Javier Blanco"
+date: "28/3/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xtable)
+library(BSDA)
+```
+
+# Ejercicio XII.1
+
+### Se desea contrastar la hipótesis de normalidad de una población de la cual se ha extraído la siguiente muestra: 12,3; 11,0; 10,7; 12,4; 11,7; 13,1; 9,9; 12,6; 11,8; 10,2; y 10,5.
+
+Se toma un nivel de significación, $\alpha$, del 5 %:
+
+```{r}
+alfa = 0.05
+```
+
+En primer lugar, se define un vector con la muestra:
+
+```{r}
+muestra = c(12.3, 11.0, 10.7, 12.4, 11.7, 13.1, 9.9, 12.6, 11.8, 10.2, 10.5)
+```
+
+Para aplicar el contraste de Shapiro-Wilk se necesita, en primer lugar, determinar el tamaño muestral:
+
+```{r}
+n = length(muestra)
+```
+
+Para $n = `r n`$, los valores tabulados de Shapiro-Wilk -obtenidos a partir de la tabla correspondiente- resultan ser los siguientes:
+
+```{r}
+coeficientes = c(0.5601, 0.3315, 0.2260, 0.1429, 0.0695)
+```
+
+Se calcula asimismo la mediana de la muestra:
+
+```{r}
+mediana = median(muestra)
+mediana
+```
+
+Se parte el vector muestral en dos subvectores, uno que contenga los valores superiores a la mediana y otro, los inferiores, y se ordenan de manera inversa para posteriormente poder calcular las diferencias entre los pares de valores que equidistan entre sí:
+
+```{r}
+submuestra1 = sort(muestra[muestra > mediana], decreasing = TRUE)
+
+submuestra2 = sort(muestra[muestra < mediana])
+
+diferencias = submuestra1 - submuestra2
+```
+
+Las diferencias se multiplican por los coeficientes para obtener los valores que, sumados, proporcionan el numerador del estadístico experimental de Shapiro-Wilk:
+
+```{r}
+sumandos = diferencias * coeficientes
+```
+
+Todas estas variables se pueden presentar de forma resumida en una tabla, construida como *data frame*, para facilitar su visualización:
+
+```{r results='asis'}
+tabla_resumen = 
+data.frame(
+            submuestra1,
+            submuestra2, 
+            diferencias,
+            coeficientes,
+            sumandos,
+            row.names = NULL
+           )
+
+colnames(tabla_resumen) = c("$x_{n-i+1}$", "$x_{i}$", "$x_{n-i+1} - x_{i}$", 
+                            "$a_{n-i+i}$", "$(x_{n-i+1} - x_{i})(a_{n-i+i})$")
+
+print(
+       xtable(
+               tabla_resumen,
+               caption = "Tabla de Shapiro-Wilk",
+               align = "cccccc"
+              ),
+       sanitize.text.function = function(x){x} #Permite aplicar Latex
+      )
+```
+
+Se calcula el valor del estadístico experimental, $W_{exp}$:
+
+```{r}
+Wexp = sum(sumandos)^2/((n-1)*var(muestra))
+Wexp
+```
+
+Si se consulta en la tabla correspondiente, el valor crítico para un nivel de significación del 5 %, $W_{11; 0,05}$, resulta ser:
+
+```{r}
+Wc = 0.85
+```
+
+Dado que $W_{exp} > W_{n, \alpha}$, no se cae en la región crítica y se puede asumir la hipótesis de que la población tiene una estructura normal:
+
+```{r}
+Wexp > Wc
+```
+
+Por otro lado, R dispone de una manera automática de realizar el contraste de Shapiro-Wilk:
+
+```{r}
+shapiro.test(muestra)
+```
+
+Con la que también se comprueba que no se puede rechazar $H_{0}$:
+
+```{r}
+Wexp = shapiro.test(muestra)$statistic #Estadístico
+
+Wexp > Wc
+
+p = shapiro.test(muestra)$p.value #p-valor
+
+p > alfa
+```
+
+# Ejercicio XII.2
+
+### Se desea contrastar si la mediana de la población de la cual se ha extraído la siguiente MAS vale 5: 4, 5, 6, 5, 3, 4, 2, 7, 6, 5, 4, 3, 8, 8, 9, 4, 6, 7, 2, 5, 6.
+
+Se plantea el siguiente contraste T de Wilcoxon:
+
+$$
+\left\{
+  \begin{array}{ll} 
+    H_{0}: Me = 5 \\
+    H_{1}: Me \ne 5
+  \end{array}
+\right.
+$$
+
+Se supone un nivel de significación, $\alpha$, del 5 %:
+
+```{r}
+alfa = 0.05
+me0 = 5
+```
+
+Como es habitual, se define un vector con la muestra:
+
+```{r}
+muestra = c(4, 5, 6, 5, 3, 4, 2, 7, 6, 5, 4, 3, 8, 8, 9, 4, 6, 7, 2, 5, 6)
+```
+
+Si se comprueba el valor de la mediana muestral:
+
+```{r}
+mediana = median(muestra)
+mediana
+```
+
+Se observa que coincide con el valor utilizado como hipótesis nula, $Me_{0} = `r me0`$.
+
+En primer lugar, se calculan las diferencias entre cada elemento de la muestra y la mediana hipotética, $x_{i}-Me_{0}$:
+
+```{r}
+diferencias = muestra - me0
+diferencias
+```
+
+A continuación, se eliminan las diferencias nulas, se obtiene el valor absoluto de las restantes y se las ordena en orden ascendente:
+
+```{r}
+absolutas = sort(abs(diferencias[diferencias != 0]))
+absolutas
+```
+
+Se determinan los valores únicos para, a partir de ellos, estimar cuales son los rangos promedio que les corresponden:
+
+```{r}
+unicos = as.numeric(levels(factor(absolutas)))
+unicos
+
+rangos = sapply(unicos, function(x) mean(which(absolutas == x)))
+rangos
+```
+
+Se define la siguiente función, que permite calcular los sumatorios de los rangos promedio en función del signo del valor de las diferencias:
+
+```{r}
+estadistico = function(diferencias_negativas_o_positivas, rangos_promedio)
+{
+  lista = c()
+  
+  for(diferencia in diferencias_negativas_o_positivas)
+  {
+    for(rango in rangos_promedio)
+    {
+      if(abs(diferencia) == which(rangos_promedio == rango))
+      {
+        lista = c(lista, rango)
+      } 
+    }
+  }
+  
+  sumatorio = sum(lista)
+  
+  return(sumatorio)
+}
+```
+
+Si se parte el vector muestral en dos subvectores, uno con los valores negativos y otro con los positivos, se pueden obtener los dos posibles valores, $T^{-}$ y $T^{+}$, del estadístico experimental, $T_{exp}$:
+
+```{r}
+diferenciasNeg = diferencias[diferencias < 0]
+diferenciasPos = diferencias[diferencias > 0]
+
+Tneg = estadistico(diferenciasNeg, rangos)
+Tneg
+
+Tpos = estadistico(diferenciasPos, rangos)
+Tpos
+```
+
+En principio, el valor de $T_{exp}$ sería el mínimo entre $T^{-}$ y $T^{+}$:
+
+```{r}
+Texp = min(Tneg, Tpos)
+```
+
+Finalmente, se calcula el número de diferencias no nulas, $n'$:
+
+```{r}
+n = length(absolutas)
+```
+
+Si se consulta en la tabla correspondiente, el valor crítico para un nivel de significación del 5 %, $T_{`r n`; 0,05}$, resulta ser:
+
+```{r}
+Tc = 41
+```
+
+Dado que $T_{exp} > T_{c}$, no se cae en la región crítica y por tanto no se puede rechazar $H_{0}$:
+
+```{r}
+Texp > Tc
+```
+
+R dispone de una manera automatizada de realizar el contraste T de Wilcoxon:
+
+```{r}
+wilcox.test(
+              muestra, 
+              mu = me0, #Se denomina mu pero hace referencia a la mediana
+              correct = FALSE,
+              exact = FALSE
+           ) 
+```
+
+Se puede ver que el estadístico experimental según R coincide con $T^{+}$ en vez de con $T^{-}$, que es el valor más pequeño de los dos. 
+
+En cualquier caso, se comprueba que no se puede rechazar $H_{0}$:
+
+```{r}
+Texp = wilcox.test(muestra, mu = me0, correct = FALSE, exact = FALSE)$statistic 
+
+Texp > Tc
+
+p = wilcox.test(muestra, mu = me0, correct = FALSE, exact = FALSE)$p.value
+
+p > alfa
+```
+

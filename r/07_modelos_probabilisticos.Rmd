@@ -1,0 +1,123 @@
+---
+title: "VII. Modelos probabilísticos"
+author: "Javier Blanco"
+date: "6/8/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio VII.1
+
+### En una población de animales, se sabe que el 60 % son machos. Si se toma una muestra de 10 individuos, ¿cuál es la probabilidad de que 7 sean hembras?
+
+Mediante la función de cuantía de la binomial (para un tamaño unidad, $n=1$, equivale a una bernoulli), se puede determinar la probabilidad ($q$) de que un individuo tomado al azar sea hembra ($Y=0$) sabiendo que el 60 % son machos ($p=0,6$):
+
+```{r}
+Y = 0
+n = 1
+p = 0.6 
+
+q = dbinom(Y, size = n, prob = p)
+q
+```
+
+De esta manera, la probabilidad, en tanto por ciento, de que en la muestra del enunciado ($n=10$) haya siete hembras ($X=7$) es:
+
+```{r}
+X = 7
+n = 10
+
+p7 = dbinom(X, size = n, prob = q)
+
+p7_porc = round(p7 * 100, 2)
+p7_porc
+```
+
+A continuación se representan la función de cuantía y la distribución de una $B(10, 0,4)$:
+
+```{r}
+par(mfrow = c(1,2)) #Dos gráficos en una sola fila
+
+plot(
+      x = c(0:10),
+      y = dbinom(c(0:10), size = n, prob = q),
+      main = "Función de cuantía",
+      ylab = "f(x)",
+      xlab = "X",
+      xlim = c(-1, 11) #Ampliación del eje x
+    )
+
+curve(
+        pbinom(x, size = n, prob = q),
+        main="Función de distribución",
+        ylab = "F(x)",
+        xlab = "X",
+        xlim=c(-1, 11) #Ampliación del eje x
+      )
+```
+
+# Ejercicio VII.2
+
+### El número medio de vehículos por minuto que llegan a una gasolinera es igual a dos.
+
+### a) *¿Cuál es la probabilidad de que en un minuto lleguen cinco vehículos?*
+
+Se trata de un proceso de Poisson con $\lambda = 2$ y soporte (temporal) unitario; por tanto, la probabilidad en tanto por ciento de que $X=5$ es:
+
+```{r}
+X = 5
+lambda = 2
+t = 1
+
+p5 = dpois(X, lambda * t)
+
+p5_porc = round(p5 * 100, 2)
+p5_porc
+```
+
+
+### b) *¿Cuál es la probabilidad de que en cinco minutos no llegue ninguno?*
+
+La unidad de soporte cambia de 1 a 5; por tanto, la probabilidad en tanto por ciento de que $Y=0$ es:
+
+```{r}
+Y = 0
+t = 5
+
+p0 = dpois(Y, lambda * t)
+
+p0_porc = round(p0 * 100, 4)
+p0_porc
+```
+
+# Ejercicio VII.3
+
+### Con los datos del anterior ejercicio, y suponiendo que acaba de llegar un vehículo, calcular la probabilidad de que transcurran más de cinco minutos hasta que aparezca el siguiente.
+
+se define una variable aleatoria continua $Z$ *tiempo transcurrido entre la llegada de dos coches* que sigue una distribución exponencial con $\lambda = 2$ (dado que el número medio de vehículos sigue siendo el especificado en el anterior ejercicio).
+
+Así, la probabilidad de que $Z$ tome un valor igual o menor a cinco es:
+
+```{r}
+Z = 5
+
+pZlte5 = pexp(Z, lambda)
+pZlte5
+```
+
+Pero como en realidad se pide que el tiempo transcurrido sea superior a cinco:
+
+```{r}
+pZgt5 = 1 - pZlte5
+pZgt5
+```
+
+Que en tanto por ciento equivale al valor obtenido en el segundo apartado del anterior ejercicio:
+
+```{r}
+pZgt5_porc = round(pZgt5 * 100, 4)
+pZgt5_porc
+```

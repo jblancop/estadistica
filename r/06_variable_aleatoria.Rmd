@@ -1,0 +1,148 @@
+---
+title: "VI. Variable aleatoria"
+author: "Javier Blanco"
+date: "27/7/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Ryacas)
+library(Deriv)
+```
+
+# Ejercicio VI.1
+
+### La función de distribución asociada a la producción de una máquina, en miles de unidades, es la siguiente:
+
+$$
+F(x)= 
+\left\{ 
+  \begin{array}{lcc}
+       0 &   si  & x < 0 \\
+    \\ x\cdot(2-x) &  si & 0 \leq x \leq 1 \\
+    \\ 1 &  si  & x > 1
+  \end{array}
+\right.
+$$
+
+### a) *Representarla gráficamente*
+
+```{r}
+x = seq(0, 1, length = 1000) #Secuencia de 1.000 puntos entre 0 y 1
+
+plot(
+      x, 2*x-x^2, #F(x) entre 0 y 1
+      type = "l", #Representación de tipo línea
+      main = "Función de distribución",
+      ylab = "F(x)",
+      xlab = "x",
+      lwd = 1, #Grosor
+      xlim = c(-0.5, 1.5), #Ampliación de los ejes
+      ylim = c(-0.25, 1.25)
+    )
+
+lines(c(-1, 0), c(0 ,0), lwd = 1) #F(x) para valores menores de 0
+lines(c(1, 2), c(1 ,1), lwd = 1) #F(x) para valores mayores de 1
+
+points(0, 0, pch = 19) #Puntos de transición
+points(1, 1, pch = 19)
+
+text(0, 0, labels = "(0, 0)", pos = 1)
+text(1, 1, labels = "(1, 1)", pos = 3)
+```
+
+
+### b) *Calcular y representar la función de densidad*
+
+Por derivación:
+
+```{r}
+Fx_lt0 = expression(0)
+Deriv(Fx_lt0)
+
+Fx_gte0_lte1 = expression(2*x-x^2)
+Deriv(Fx_gte0_lte1)
+
+Fx_gt1 = expression(1)
+Deriv(Fx_gt1)
+```
+
+Con lo cual:
+
+$$
+f(x)= 
+\left\{ 
+  \begin{array}{lcc}
+       2-2\cdot x &  si & 0 \leq x \leq 1 \\
+    \\ 0 &  si & resto
+  \end{array}
+\right.
+$$
+
+Así:
+
+```{r}
+x = seq(0, 1, length = 1000) #Secuencia de 1.000 puntos entre 0 y 1
+
+plot(
+      x, 2-2*x, #f(x) entre 0 y 1
+      type = "l", #Representación de tipo línea
+      main = "Función de densidad", 
+      ylab = "f(x)", 
+      xlab = "x",
+      lwd = 1, #Grosor
+      xlim = c(-0.5, 1.5), #Ampliación de los ejes
+      ylim = c(-0.5, 2.5)
+    )
+
+lines(c(-1, 0), c(0 ,0), lwd = 1) #f(x) para valores menores de 0
+lines(c(1, 2), c(0, 0), lwd = 1) #f(x) para valores mayores de 1
+
+points(0, 0, pch = 1) #Puntos de transición
+points(0, 2, pch = 19)
+points(1, 0, pch = 19)
+
+text(0, 0, labels = "(0, 0)", pos = 1)
+text(0, 2, labels = "(0, 2)", pos = 3)
+text(1, 0, labels = "(1, 0)", pos = 1)
+```
+
+
+### c) *Obtener la media y la varianza de la producción*
+
+La media viene dada por la esperanza matemática:
+
+```{r}
+E = (integrate(function(x) x * (2-2*x), lower = 0, upper = 1)$value)
+
+media = round(E * 1000, 2)
+media
+```
+
+La varianza se puede calcular a partir de la esperanza:
+
+```{r}
+E_X2 = (integrate(function(x) x^2 * (2-2*x), lower = 0, upper = 1)$value)
+
+varianza = round((E_X2 - E^2) * 1000, 2)
+varianza
+```
+
+
+### d) *¿Cuál es la probabilidad de que la producción sea inferior a 500 unidades? ¿Y superior a 250?*
+
+A partir de la función de densidad:
+
+```{r}
+pXlte500 = (integrate(function(x) 2-2*x, lower = 0, upper = 0.5)$value)
+
+pXlte500_red = round(pXlte500, 2)
+pXlte500_red
+
+pXgt250 = 1 - (integrate(function(x) 2-2*x, lower = 0, upper = 0.25)$value)
+
+pXgt250_red = round(pXgt250, 2)
+pXgt250_red
+```
+

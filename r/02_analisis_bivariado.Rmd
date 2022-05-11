@@ -1,0 +1,281 @@
+---
+title: "II. Análisis bivariado"
+author: "Javier Blanco"
+date: "2/4/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xtable)
+```
+
+# Ejercicio II.1
+
+### Se ha clasificado el peso de los huevos, $Y$, de una especie de pez en función del peso de la madre, $X$, como refleja la tabla adjunta, y se pide estimar una serie de características de la distribución.
+
+$X$/$Y$    | [25, 27) | [27, 29) | [29, 31) | [31, 33)
+---------- | -------- | -------- | -------- | --------
+[500, 550) | 15       | 11       | 18       | 0
+[550, 600) | 12       | 14       | 0        | 12
+[600, 650) | 0        | 3        | 7        | 18
+
+En primer lugar, se construye con código la tabla bidimensional del enunciado; para ello, se combinan dos *vectores* $X$ e $Y$ definidos a su vez como agrupación de *vectores constantes* con las **frecuencias absolutas** $n_{ij}$ de cada **par de valores** $(x_{i}, y_{j})$:
+
+```{r}
+y = c(
+      rep("[25, 27)", 15), rep("[27, 29)", 11), rep("[29, 31)", 18), rep("[31, 33)", 0), 
+      rep("[25, 27)", 12), rep("[27, 29)", 14), rep("[29, 31)", 0), rep("[31, 33)", 12), 
+      rep("[25, 27)", 0), rep("[27, 29)", 3), rep("[29, 31)", 7), rep("[31, 33)", 18)
+     )
+
+x = c(
+      rep("[500, 550)", 15), rep("[500, 550)", 11), 
+      rep("[500, 550)", 18), rep("[500, 550)", 0), 
+      rep("[550, 600)", 12), rep("[550, 600)", 14), 
+      rep("[550, 600)", 0), rep("[550, 600)", 12), 
+      rep("[600, 650)", 0), rep("[600, 650)", 3), 
+      rep("[600, 650)", 7), rep("[600, 650)", 18)
+     )
+
+tabla_2d = table(x, y)
+tabla_2d
+```
+
+### a) *Distribución del peso del huevo*
+
+Equivale a calcular la **distribución marginal** de $Y$, sus **frecuencias absolutas marginales** $n_{.j}$:
+
+```{r}
+n.j = colSums(tabla_2d)
+n.j
+```
+
+Siendo las de $X$ (es decir, la distribución marginal del peso de la madre), $n_{i.}$:
+
+```{r}
+ni. = rowSums(tabla_2d)
+ni.
+```
+
+El número total de observaciones, $n$ o $n_{..}$:
+
+```{r}
+n = sum(tabla_2d)
+n
+```
+
+En conjunto:
+
+```{r}
+addmargins(tabla_2d)
+```
+
+
+### b) *Distribución del peso de la madre cuando el huevo tiene el suyo comprendido entre 25 y 27*
+
+Se trata de la **distribución condicionada** de $X$ a $Y$ cuando ésta toma valores únicamente en el intervalo [25, 27); es decir, las **frecuencias relativas condicionadas** $f_{i|1}$:
+
+```{r}
+fi_1 = prop.table(tabla_2d, margin = 2)[ ,1]
+
+fi_1_red = round(fi_1, 2)
+fi_1_red
+```
+
+Si se calcula para todos los intervalos de peso de los huevos, $f_{i|j}$:
+
+```{r}
+fi_j = round(prop.table(tabla_2d, margin = 2), 2)
+fi_j
+```
+
+Y si se quiere calcular la distribución del peso de los huevos condicionada al peso de la madre, $f_{j|i}$:
+
+```{r}
+fj_i = round(prop.table(tabla_2d, margin = 1), 2)
+fj_i
+```
+
+### c) *Media, mediana y moda del peso de los huevos*
+
+En primer lugar, se crea un vector con las **marcas de clase**, $y_{j}$:
+
+```{r}
+l1 = 25 #Límite inferior del primer intervalo
+l2 = 27 #Límite superior del primer intervalo
+a = l2 - l1 #Amplitud de los intervalos
+s = 4 #Número de intervalos
+
+y1 = (l1 + l2)/2 #Primera marca de clase
+
+yj = y1 + a * (1:s-1)
+yj
+```
+
+Y a partir de él, las distribuciones marginales de $Y$ y el número total de observaciones, se determina la **media** ($\bar{y}$):
+
+```{r}
+media = round(sum(yj * n.j)/n, 2)
+media
+```
+
+Para determinar la **mediana** ($Me_{y}$), en primer lugar se determina el intervalo de $Y$ cuya **frecuencia relativa acumulada marginal** ($F_{.j}$) es superior a 0,5:
+
+```{r}
+F.j = cumsum(n.j/n)
+
+intervalos = names(which(F.j > 0.5)) #Intervalos con F.j superior a 0,5
+
+int_med = intervalos[1] #La mediana se encuentra en el inmediatamente superior
+int_med
+```
+
+Se toma el extremo inferior de este intervalo:
+
+```{r}
+l_med = 29
+```
+
+Se determina la **frecuencia absoluta acumulada marginal** ($N_{.j}$) del intervalo anterior:
+
+```{r}
+intervalos = names(which(F.j <= 0.5)) #Intervalos con F.j inferior o igual a 0,5
+
+int_ant = intervalos[-1] #Intervalo inmediatamente inferior al que contiene la mediana
+
+N.j = cumsum(n.j)
+
+N.j_ant = N.j[int_ant]
+N.j_ant
+```
+
+Y la frecuencia absoluta marginal del intervalo que contiene la mediana:
+
+```{r}
+n.j_med = n.j[int_med]
+n.j_med
+```
+
+La mediana se calcula como:
+
+```{r}
+mediana = l_med + a * ((n/2 - N.j_ant)/n.j_med)
+mediana = as.numeric(mediana)
+mediana
+```
+
+Con respecto a la **moda**, se puede estimar el intervalo modal, aquel con mayor **frecuencia relativa marginal** ($f_{.j}$):
+
+```{r}
+f.j = n.j/n
+
+int_mod = names(which(f.j == max(f.j)))
+int_mod
+```
+
+### d) *Nivel de representatividad de la media del peso de la madre cuando el huevo está comprendido entre 25 y 27*
+
+En primer lugar, se determinan las **marcas de clase**, pero en este caso para la variable $X$, el peso de la madre ($x_{i}$):
+
+```{r}
+l1 = 500 #Límite inferior del primer intervalo
+l2 = 550 #Límite superior del primer intervalo
+a = l2 - l1 #Amplitud de los intervalos
+r = 3 #Número de intervalos
+
+x1 = (l1 + l2)/2 #Primera marca de clase
+
+xi = x1 + a * (1:r-1)
+xi
+```
+
+A partir de ellas y de las **frecuencias relativas condicionadas** $f_{i|1}$, se puede determinar la **media** ($\bar{x}$) de $X$ en relación al primer intervalo de $Y$:
+
+```{r}
+media = sum(xi * fi_1)
+
+media_red = round(media, 2)
+media_red
+```
+
+Y a partir de la media se puede calcular la **desviación típica** ($S_{x}$):
+
+```{r}
+varianza = sum(xi^2 * fi_1) - media^2
+
+desv_tip = sqrt(varianza)
+
+desv_tip_red = round(desv_tip, 2)
+desv_tip_red
+```
+
+Con ambas, se calcula el **coeficiente de variación** ($CV$), que es el que indica el nivel de representatividad de la media:
+
+```{r}
+cv = round(desv_tip/media, 3)
+cv
+```
+
+### e) *Independencia de las variables*
+
+Se va a estimar a partir del par $(x_{1}, y_{1})$:
+
+```{r}
+f11 = tabla_2d[1, 1]/n
+f1. = ni.[1]/n
+f.1 = n.j[1]/n
+
+as.vector(f11 == f1. * f.1)
+```
+
+Dado que no se verifica la igualdad, las variables no son independientes.
+
+### f) *Dependencia lineal de las variables*
+
+Se va a estimar a través del **coeficiente de correlación de Pearson** ($r$); en primer lugar, se calculan las varianzas de ambas variables:
+
+```{r}
+fi. = ni./n #Frecuencias relativas marginales de x
+
+media_x = sum(xi * fi.)
+
+var_x = sum(xi^2 * fi.) - media_x^2
+
+var_x_red = round(var_x, 2)
+var_x_red
+```
+
+```{r}
+f.j = n.j/n #Frecuencias relativas marginales de y
+
+media_y = sum(yj * f.j)
+
+var_y = sum(yj^2 * f.j) - media_y^2
+
+var_y_red = round(var_y, 2)
+var_y_red
+```
+
+En segundo lugar, la **covarianza** ($S_{XY}$):
+
+```{r}
+a = (yj * rep(xi[1], 4) * tabla_2d[1, ])/n  
+b = (yj * rep(xi[2], 4) * tabla_2d[2, ])/n 
+c = (yj * rep(xi[3], 4) * tabla_2d[3, ])/n
+a
+covarianza = sum(a, b, c) - (media_x * media_y)
+
+covarianza_red = round(covarianza, 2)
+covarianza_red
+```
+
+Y, finalmente, el coeficiente:
+
+```{r}
+r = round(covarianza/sqrt(var_x * var_y), 2)
+r
+```

@@ -1,0 +1,353 @@
+---
+title: "I. Síntesis de la información"
+author: "Javier Blanco"
+date: "1/3/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xtable)
+```
+
+# Ejercicio I.1.
+
+### El número de crías por camada en una granja porcina para un periodo dado arroja los siguientes resultados: 4, 7, 2, 8, 6, 7, 2, 2, 9, 5, 5, 4, 5, 2, 6, 4, 7, 8, 4, 8. Se pide caracterizar esta distribución de valores de la forma más detallada posible.
+
+### a) *Distribución de frecuencias*
+
+Para trabajar con los datos proporcionados por el enunciado, lo más sencillo es incluirlos en un *vector* y asignar éste a una variable:
+
+```{r}
+crias = c(4, 7, 2, 8, 6, 7, 2, 2, 9, 5, 5, 4, 5, 2, 6, 4, 7, 8, 4, 8)
+```
+
+El número de **observaciones** ($n$), resulta ser:
+
+```{r}
+n = length(crias)
+n
+```
+
+A partir del vector se puede determinar para cada **valor** ($x_{i}$) su **frecuencia absoluta** ($n_{i}$):
+
+```{r}
+ni = table(crias)
+ni
+```
+
+Teniendo la distribución de frecuencias absolutas, el número de **niveles** ($i$) es fácil de estimar:
+
+```{r}
+i = length(ni)
+i
+```
+
+El vector "crias" se puede codificar como un *factor* al que se le explicite el número de niveles; a pesar de que $i=7$, dado que los valores 1, 3 y 10 no forman parte de la distribución, de cara al cálculo de las frecuencias es interesante que aparezcan reseñados (es decir, pretender que $i=10$):
+
+```{r}
+criasFac = factor(crias, levels = 1:10)
+```
+
+Si ahora se calcula la distribución de frecuencias absolutas para el factor, se tiene:
+
+```{r}
+nj = table(criasFac)
+nj
+```
+
+Con respecto a las **frecuencias absolutas acumuladas** ($N_{i}$):
+
+```{r}
+Ni = cumsum(ni)
+Ni
+
+Nj = cumsum(nj)
+Nj
+```
+
+De la misma manera, se tiene la siguiente distribución de **frecuencias relativas** ($f_{i}$):
+
+```{r}
+fi = prop.table(ni)
+fi
+
+fj = prop.table(nj)
+fj
+```
+
+Y con respecto a las **frecuencias relativas acumuladas** ($F_{i}$):
+
+```{r}
+Fi = cumsum(fi)
+Fi
+
+Fj = cumsum(fj)
+Fj
+```
+
+Los resultados -para el vector- se pueden presentar de forma resumida en una tabla, construida como *data frame* que agrupe todas las variables que se han definido hasta ahora:
+
+```{r results='asis'}
+tablaFrec = 
+data.frame(
+            ni,
+            Ni, 
+            as.vector(fi), #Evita que se representen de nuevo los valores
+            Fi,
+            row.names = NULL
+          )
+
+colnames(tablaFrec) = c("$x_{i}$", "$n_{i}$", "$N_{i}$", "$f_{i}$", "$F_{i}$")
+
+print(
+        xtable(
+                tablaFrec,
+                caption = "Distribución de frecuencias",
+                align = "cccccc"
+              ),
+        sanitize.text.function = function(x){x} #Permite aplicar Latex
+     )
+```
+
+Las distribuciones de frecuencias absolutas y relativas -para el factor- se pueden representar visualmente mediante un diagrama de barras:
+
+```{r}
+par(mfrow = c(1, 2)) #Permite representar una gráfica al lado de la otra
+
+barplot(nj, col = "lightblue", main = "Frecuencias absolutas")
+barplot(fj, col = "lightblue", main = "Frecuencias relativas")
+```
+
+### b) *Medidas centrales*
+
+La **media aritmética** ($\bar{x}$):
+
+```{r}
+media = mean(crias)
+media
+```
+
+La **mediana** ($Me$):
+
+```{r}
+mediana = median(crias)
+mediana
+```
+
+No existe una función en R para calcular la **moda** ($Mo$), sino que se ha de determinar como el valor (o valores, porque en este caso son dos diferentes) cuya frecuencia absoluta es máxima:
+
+```{r}
+moda = as.numeric(names(which(ni == max(ni))))  
+moda
+```
+
+### c) *Medidas de posición*
+
+Para el cálculo de los **cuantiles** resulta interesante, en primer lugar, presentar el vector ordenado, a modo de referencia:
+
+```{r}
+criasOrd = sort(crias)
+criasOrd
+```
+
+De todos los posibles cuantiles, se van a calcular el tercer **cuartil** ($Q_{3}$) y el **percentil** veinte ($P_{20}$):
+
+```{r}
+Q3 = quantile(crias, 0.75, type = 2)
+Q3
+
+P20 = quantile(crias, 0.20, type = 2)
+P20
+```
+
+Es sabido que la mediana es el quinto **decil** ($D_{5}$):
+
+```{r}
+D5 = quantile(crias, 0.50, type = 2)
+D5
+```
+
+Que coincide con el cálculo realizado en el apartado anterior.
+
+### d) *Medidas de dispersión*
+
+La **varianza** ($S^{2}$):
+
+```{r}
+cuasivar = var(crias)
+cuasivar
+```
+
+Por defecto, R calcula la cuasivarianza ($S^{2}_{c}$) o varianza corregida, en la que el denominador es $n-1$; para determinar la varianza en sentido estricto (en la que el denominador es simplemente $n$), hay que aplicar un factor corrector, $\frac{n-1}{n}$:
+
+```{r}
+k = (n-1)/n
+
+var = cuasivar * k
+var
+```
+
+La **desviación típica** ($S$):
+
+```{r}
+cuasiDT = sd(crias)
+cuasiDT
+```
+
+De nuevo, R calcula la **cuasidesviación típica** ($S_{c}$); la manera más sencilla de obtener la desviación típica en sentido estricto es determinar la raíz cuadrada de la varianza:
+
+```{r}
+DT = sqrt(var)
+DT
+```
+
+El **rango** ($R$):
+
+```{r}
+rango = diff(range(crias)) #Equivale a max(crias) - min(crias)
+rango
+```
+
+El **rango intercuartílico** ($R_{I}$):
+
+```{r}
+rangoInt = IQR(crias, type = 2)
+rangoInt
+```
+
+El **coeficiente de variación** ($CV$):
+
+```{r}
+CV = DT/media
+CV
+```
+
+### e) *Agrupación por intervalos*
+
+Se determina el número de **intervalos**:
+
+```{r}
+k = ceiling(sqrt(n)) #Se redondea hacia arriba
+k
+```
+
+Y su amplitud:
+
+```{r}
+A = rango/k
+A
+```
+
+Conviene redondear también este valor hacia arriba para evitar que los valores de la distribución se solapen con los extremos de los intervalos:
+
+```{r}
+A = 1.5
+```
+
+Se establece el extremo inferior del primer intervalo ($L_{1}$) como el valor mínimo de la distribución menos la mitad de la precisión, que en este caso está en las décimas:
+
+```{r}
+f = 1/2 * 0.1
+
+L1 = min(crias) - f
+L1
+```
+
+Y para todos los **extremos de los intervalos** ($L_{i}$) se construye el siguiente vector:
+
+```{r}
+L = L1 + A * (0:k)
+L
+```
+
+La primera marca de clase ($x_{1}$) se puede determinar como el punto medio entre $L_{1}$ y $L_{2}$:
+
+```{r}
+x1 = (L[1] + L[2])/2
+x1
+```
+
+Y de manera análoga a como se hizo con los extremos, se obtienen todas las **marcas de clase** ($x_{i}$):
+
+```{r}
+x = x1 + A * (1:k-1)
+x
+```
+
+R dispone de la siguiente función para agrupar en intervalos (niveles) un vector de datos numéricos:
+
+```{r}
+criasInt = 
+cut(
+      crias, 
+      breaks = L, #Extremos de los intervalos 
+      #labels = x, #Se podrían usar las marcas de clase como etiquetas
+      right = FALSE #Intervalos cerrados por la izquierda
+   )
+levels(criasInt)
+```
+
+Para determinar las frecuencias absolutas y relativas, incluyendo las acumuladas, podemos recurrir a las funciones empleadas anteriormente:
+
+```{r}
+ni = table(criasInt)
+Ni = cumsum(ni)
+fi = prop.table(ni)
+Fi = cumsum(fi)
+```
+
+La presentación en forma de tabla sería análoga a la ya hecha:
+
+```{r results='asis'}
+tablaFrecInt = 
+data.frame(
+            ni,
+            Ni, 
+            as.vector(fi), #Evita que se representen de nuevo los intervalos
+            Fi,
+            row.names = NULL
+          )
+
+colnames(tablaFrecInt) = c("$[L_{i}, L_{i+1})$", "$n_{i}$", 
+                            "$N_{i}$", "$f_{i}$", "$F_{i}$")
+
+print(
+        xtable(
+                tablaFrecInt,
+                caption = "Distribución de frecuencias agrupando por intervalos",
+                align = "cccccc"
+              ),
+        sanitize.text.function = function(x){x} #Permite aplicar Latex
+     )
+```
+
+Y para la representación gráfica de las frecuencias de los intervalos se recurre a un histograma -R no permite mostrar las frecuencias relativas como tal con un histograma, por lo que se recurre a un gráfico de barras modificado-:
+
+```{r}
+par(mfrow = c(1, 2)) #Permite representar una gráfica al lado de la otra
+
+hist(
+      crias, 
+      breaks = L, #Extremos de los intervalos
+      freq = TRUE, #Frecuencias absolutas
+      right = FALSE, #Intervalos cerrados por la izquierda
+      xaxt = "n", #Elimina la leyenda del eje X
+      xlab = "Intervalos", ylab = "",
+      col = "lightblue", 
+      main = "Frecuencias absolutas"
+    )
+axis(1, at = L) #Intervalos como leyenda del eje X
+
+barplot(
+          unname(fi), #Elimina las etiquetas
+          space = 0, #Elimina el espacio entre barras para simular aspecto de histograma
+          xlab = "Marcas de clase", ylab = "",
+          col = "lightblue",
+          main = "Frecuencias relativas"
+       )
+axis(1, at = (x - L1) * 2/3, labels = x) #Marcas de clase como leyenda del eje X
+```
