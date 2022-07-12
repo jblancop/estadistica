@@ -18,17 +18,17 @@ $X$ | 1 | 2 | 3 | 4  | 5  | 6
 ----| - | - | - | -- | -- | -- 
 $Y$ | 2 | 5 | 9 | 13 | 17 | 21
 
-En primer lugar, se construyen sendos vectores con los datos del enunciado, que representan a la **variable independiente** $X$ y a la **dependiente** $Y$:
+En primer lugar, se construyen sendos *vectores* con los datos del enunciado, que representan a la **variable independiente** $X$ y a la **dependiente** $Y$:
 
 ```{r}
-x = c(1, 2, 3, 4, 5, 6)
-y = c(2, 5, 9, 13, 17, 21)
+X = c(1, 2, 3, 4, 5, 6)
+Y = c(2, 5, 9, 13, 17, 21)
 ```
 
 Los **coeficientes** de la **recta de regresión** de $Y$ en función de $X$ se calculan de la siguiente manera:
 
 ```{r}
-coeficientes = lm(y~x)
+coeficientes = lm(Y~X)
 coeficientes
 ```
 
@@ -37,10 +37,10 @@ Siendo *x* la pendiente e *intercept* el punto de corte del eje de ordenadas, de
 La bondad del ajuste, calculada a través del **coeficiente de determinación** $R^{2}$:
 
 ```{r}
-r_dos = summary(coeficientes)$r.squared
+R2 = summary(coeficientes)$r.squared
 
-r_dos_red = round(r_dos, 3)
-r_dos_red
+R2Red = round(R2, 3)
+R2Red
 ```
 
 Que indica que el ajuste es excelente.
@@ -48,7 +48,7 @@ Que indica que el ajuste es excelente.
 Si se representa gráficamente el conjunto:
 
 ```{r}
-plot(x, y, main = "Ajuste por mínimos cuadrados", xlab = "X", ylab = "Y")
+plot(X, Y, main = "Ajuste por mínimos cuadrados", xlab = "X", ylab = "Y")
 abline(coeficientes, col = "purple") #Recta de regresión
 ```
 
