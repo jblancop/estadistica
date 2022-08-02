@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(gtools)
 ```
 
-# Ejercicio IV.1
+# Ejercicio IV.1.
 
 ### En un instituto, los alumnos de segundo de bachillerato deciden realizar un sorteo para el viaje de fin de curso; para numerar las papeletas, utilizan únicamente los dígitos 1, 2, 3, 4 y 5. Cuántas papeletas distintas de cuatro dígitos podrán vender si:
 
@@ -22,8 +22,8 @@ Se trata de una **variación sin repetición**:
 m = length(c(1, 2, 3, 4, 5)) #Dígitos posibles
 n = 4 #Dígitos por papeleta
 
-variacion_sin = nrow(permutations(m, n, repeats.allowed = FALSE))
-variacion_sin
+varSin = nrow(permutations(m, n, repeats.allowed = FALSE))
+varSin
 ```
 
 ### b) *Pueden aparecer dígitos repetidos*
@@ -31,8 +31,8 @@ variacion_sin
 Se trata de una **variación con repetición**:
 
 ```{r}
-variacion_con = nrow(permutations(m, n, repeats.allowed = TRUE))
-variacion_con
+varCon = nrow(permutations(m, n, repeats.allowed = TRUE))
+varCon
 ```
 
 ### c) *Aparecen tres unos y un cinco*
@@ -40,7 +40,7 @@ variacion_con
 Se trata de una **permutación con repetición**; se define la siguiente función:
 
 ```{r}
-permutacion_con = function(n, a1, a2) 
+permCon = function(n, a1, a2) 
 {
   return(factorial(n)/(factorial(a1) * factorial(a2)))
 }
@@ -49,7 +49,7 @@ a1 = 3 #Tres unos
 a2 = 1 #Un cinco
 n = a1 + a2
 
-permutacion_con(n, a1, a2)
+permCon(n, a1, a2)
 ```
 
 ### d) *Sólo se utilizan los dígitos 2, 3, 4 y 5 sin repetir ninguno*
@@ -59,8 +59,8 @@ Se trata de una **permutación sin repetición**:
 ```{r}
 m = length(c(2, 3, 4, 5)) #Dígitos posibles
 
-permutacion_sin = factorial(m)
-permutacion_sin
+permSin = factorial(m)
+permSin
 ```
 
 ### e) *Sólo se utilizan los dígitos 2, 3, 4 y 5 pero se pueden repetir*
@@ -68,8 +68,8 @@ permutacion_sin
 Se trata de una **variación con repetición**:
 
 ```{r}
-variacion_con = nrow(permutations(m, m, repeats.allowed = TRUE))
-variacion_con
+varCon = nrow(permutations(m, m, repeats.allowed = TRUE))
+varCon
 ```
 
 ### f) *No se tiene en cuenta el orden, pero los dígitos son distintos*
@@ -80,8 +80,8 @@ Se trata de una **combinación sin repetición**:
 m = length(c(1, 2, 3, 4, 5)) #Dígitos posibles
 n = 4 #Dígitos por papeleta
 
-combinacion_sin = nrow(combinations(m, n, repeats.allowed = FALSE))
-combinacion_sin
+combSin = nrow(combinations(m, n, repeats.allowed = FALSE))
+combSin
 ```
 
 ### g) *No se tiene en cuenta el orden, pero los dígitos pueden estar repetidos*
@@ -89,6 +89,6 @@ combinacion_sin
 Se trata de una **combinación con repetición**:
 
 ```{r}
-combinacion_con = nrow(combinations(m, n, repeats.allowed = TRUE))
-combinacion_con
+combCon = nrow(combinations(m, n, repeats.allowed = TRUE))
+combCon
 ```
