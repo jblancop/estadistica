@@ -9,11 +9,11 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Ejercicio V.3
+# Ejercicio V.3.
 
 ### Para un sistema de alarma, la probabilidad de que funcione en caso de peligro es de 0,95, mientras que la de que funcione por error -sin que haya peligro- es de 0,03. Si la probabilidad de que haya peligro es de 0,1:
 
-### a) *Calcular el porcentaje de veces en que, habiendo funcionado la alarma, no hubiese realmente peligro*
+### a) *Calcular el porcentaje de veces en las que, habiendo funcionado la alarma, no hubiese realmente peligro*
 
 Se define un **suceso** $P$, que haya peligro, y su **complementario**, $\bar{P}$, que no lo haya, cuyas **probabilidades** son, respectivamente, $P(P)$ y $P(\bar{P})$:
 
@@ -44,39 +44,45 @@ pNoFdadoNoP = 1 - pFdadoNoP
 pNoFdadoNoP
 ```
 
-Lo que se pide es otra probabilidad condicionada, que se puede determinar a través del **teorema de Bayes** y de la **probabilidad total**; para ello, se definen las siguientes funciones:
+Lo que se pide es otra probabilidad condicionada, que se puede determinar a través del **teorema de Bayes** y de la **probabilidad total**; para ello, se define la siguiente función:
 
 ```{r}
-total = function(p1, p2, p3, p4)
+bayes = function(probabilidades)
 {
-  return(p1 * p2 + p3 * p4)
-}
+  pImpar = probabilidades[seq(1, length(probabilidades), 2)] #Probabilidad total
+  pPar = probabilidades[seq(2, length(probabilidades), 2)]
+  
+  denominador = sum(pImpar * pPar)
+  numerador = probabilidades[1] * probabilidades[2]
 
-bayes = function(p3, p4, total) 
-{
-  return((p3 * p4)/total)
+  return(numerador/denominador)
 }
+```
+
+Para hacer uso de esta función, en primer lugar se ha de definir un vector que incluya todas las probabilidades necesarias y en el orden apropiado (los elementos que formen parte del numerador de la fórmula de Bayes, en primer lugar; el orden de los demás da igual mientras estén agrupados dos a dos de forma correcta):
+
+```{r}
+probabilidades = c(pFdadoNoP, pNoP, pFdadoP, pP)
 ```
 
 Así, $P(\bar{P}|F)$, en tanto por ciento, resulta ser:
 
 ```{r}
-pNoPdadoF = bayes(pFdadoNoP, pNoP, total(pFdadoP, pP, pFdadoNoP, pNoP))
+pNoPdadoF = bayes(probabilidades)
 
-pNoPdadoF_porc = round(pNoPdadoF * 100, 2)
-pNoPdadoF_porc
+pNoPdadoFporc = round(pNoPdadoF * 100, 2)
+pNoPdadoFporc
 ```
-
 
 ### b) *Hallar la probabilidad de que haya peligro y la alarma no funcione*
 
-Se trata de la probabilidad de la intersección entre ambos sucesos, $P(P\cap\bar{F})$, que por la definición de probabilidad condicionada resulta ser -en tanto por ciento-:
+Se trata de la probabilidad de la **intersección** entre ambos sucesos, $P(P\cap\bar{F})$, que por la definición de probabilidad condicionada resulta ser -en tanto por ciento-:
 
 ```{r}
 pPyNoF = pNoFdadoP * pP
 
-pPyNoF_porc = round(pPyNoF * 100, 2)
-pPyNoF_porc
+pPyNoFporc = round(pPyNoF * 100, 2)
+pPyNoFporc
 ```
 
 
@@ -85,8 +91,10 @@ pPyNoF_porc
 Es decir, $P(P|\bar{F})$; de nuevo, por el teorema de Bayes y en tanto por ciento:
 
 ```{r}
-pPdadoNoF = bayes(pNoFdadoP, pP, 1 - total(pFdadoP, pP, pFdadoNoP, pNoP))
+probabilidades = c(pNoFdadoP, pP, pNoFdadoNoP, pNoP)
 
-pPdadoNoF_porc = round(pPdadoNoF * 100, 2)
-pPdadoNoF_porc
+pPdadoNoF = bayes(probabilidades)
+
+pPdadoNoFporc = round(pPdadoNoF * 100, 2)
+pPdadoNoFporc
 ```
