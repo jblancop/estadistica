@@ -11,7 +11,7 @@ library(Ryacas)
 library(Deriv)
 ```
 
-# Ejercicio VI.1
+# Ejercicio VI.1.
 
 ### La función de distribución asociada a la producción de una máquina, en miles de unidades, es la siguiente:
 
@@ -58,14 +58,14 @@ text(1, 1, labels = "(1, 1)", pos = 3)
 Por derivación:
 
 ```{r}
-Fx_lt0 = expression(0)
-Deriv(Fx_lt0)
+Fx0 = expression(0) #F(x) para valores menores de 0
+Deriv(Fx0)
 
-Fx_gte0_lte1 = expression(2*x-x^2)
-Deriv(Fx_gte0_lte1)
+Fx01 = expression(2*x-x^2) #F(x) entre 0 y 1
+Deriv(Fx01)
 
-Fx_gt1 = expression(1)
-Deriv(Fx_gt1)
+Fx1 = expression(1) #F(x) para valores mayores de 1
+Deriv(Fx1)
 ```
 
 Con lo cual:
@@ -80,7 +80,7 @@ f(x)=
 \right.
 $$
 
-Así:
+Gráficamente:
 
 ```{r}
 x = seq(0, 1, length = 1000) #Secuencia de 1.000 puntos entre 0 y 1
@@ -123,10 +123,10 @@ media
 La varianza se puede calcular a partir de la esperanza:
 
 ```{r}
-E_X2 = (integrate(function(x) x^2 * (2-2*x), lower = 0, upper = 1)$value)
+EX2 = (integrate(function(x) x^2 * (2-2*x), lower = 0, upper = 1)$value)
 
-varianza = round((E_X2 - E^2) * 1000, 2)
-varianza
+var = round((EX2 - E^2) * 1000, 2)
+var
 ```
 
 
@@ -137,12 +137,12 @@ A partir de la función de densidad:
 ```{r}
 pXlte500 = (integrate(function(x) 2-2*x, lower = 0, upper = 0.5)$value)
 
-pXlte500_red = round(pXlte500, 2)
-pXlte500_red
+pXlte500Red = round(pXlte500, 2)
+pXlte500Red
 
 pXgt250 = 1 - (integrate(function(x) 2-2*x, lower = 0, upper = 0.25)$value)
 
-pXgt250_red = round(pXgt250, 2)
-pXgt250_red
+pXgt250Red = round(pXgt250, 2)
+pXgt250Red
 ```
 
