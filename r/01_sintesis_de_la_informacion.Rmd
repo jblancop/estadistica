@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(xtable)
 ```
 
-# Ejercicio I.1.
+# Ejercicio I.1
 
 ### El número de crías por camada en una granja porcina para un periodo dado arroja los siguientes resultados: 4, 7, 2, 8, 6, 7, 2, 2, 9, 5, 5, 4, 5, 2, 6, 4, 7, 8, 4, 8. Se pide caracterizar esta distribución de valores de la forma más detallada posible.
 

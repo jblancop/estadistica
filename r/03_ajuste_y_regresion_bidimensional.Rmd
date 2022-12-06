@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(xtable)
 ```
 
-# Ejercicio III.1.
+# Ejercicio III.1
 
 ### Dada la distribución bidimensional de la tabla adjunta, determinar la recta de ajuste de Y en función de X y la bondad de dicho ajuste.
 

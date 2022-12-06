@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(xtable)
 ```
 
-# Ejercicio II.1.
+# Ejercicio II.1
 
 ### Se ha clasificado el peso de los huevos, $Y$, de una especie de pez en función del peso de la madre, $X$, como refleja la tabla adjunta, y se pide estimar una serie de características de la distribución.
 

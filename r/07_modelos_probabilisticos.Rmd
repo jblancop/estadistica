@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### En una población de animales, se sabe que el 60 % son machos. Si se toma una muestra de 10 individuos, ¿cuál es la probabilidad de que 7 sean hembras?
 
-Mediante la función de cuantía de la binomial (para un tamaño unidad, $n=1$, equivale a una bernoulli), se puede determinar la probabilidad ($q$) de que un individuo tomado al azar sea hembra ($Y=0$) sabiendo que el 60 % son machos ($p=0,6$):
+Mediante la función de cuantía de la binomial (que para un tamaño unidad, $n=1$, equivale a una bernoulli), se puede determinar la probabilidad ($q$) de que un individuo tomado al azar sea hembra ($Y=0$) sabiendo que el 60 % son machos ($p=0,6$):
 
 ```{r}
 Y = 0
@@ -32,11 +32,11 @@ n = 10
 
 p7 = dbinom(X, size = n, prob = q)
 
-p7_porc = round(p7 * 100, 2)
-p7_porc
+p7Porc = round(p7 * 100, 2)
+p7Porc
 ```
 
-A continuación se representan la función de cuantía y la distribución de una $B(10, 0,4)$:
+A continuación se representan la función de cuantía y de distribución de una $B(10, 0,4)$:
 
 ```{r}
 par(mfrow = c(1,2)) #Dos gráficos en una sola fila
@@ -52,10 +52,10 @@ plot(
 
 curve(
         pbinom(x, size = n, prob = q),
-        main="Función de distribución",
+        main = "Función de distribución",
         ylab = "F(x)",
         xlab = "X",
-        xlim=c(-1, 11) #Ampliación del eje x
+        xlim = c(-1, 11) #Ampliación del eje x
       )
 ```
 
@@ -74,8 +74,8 @@ t = 1
 
 p5 = dpois(X, lambda * t)
 
-p5_porc = round(p5 * 100, 2)
-p5_porc
+p5Porc = round(p5 * 100, 2)
+p5Porc
 ```
 
 
@@ -89,35 +89,35 @@ t = 5
 
 p0 = dpois(Y, lambda * t)
 
-p0_porc = round(p0 * 100, 4)
-p0_porc
+p0Porc = round(p0 * 100, 4)
+p0Porc
 ```
 
 # Ejercicio VII.3
 
 ### Con los datos del anterior ejercicio, y suponiendo que acaba de llegar un vehículo, calcular la probabilidad de que transcurran más de cinco minutos hasta que aparezca el siguiente.
 
-se define una variable aleatoria continua $Z$ *tiempo transcurrido entre la llegada de dos coches* que sigue una distribución exponencial con $\lambda = 2$ (dado que el número medio de vehículos sigue siendo el especificado en el anterior ejercicio).
+Se define una variable aleatoria continua $Z$ *tiempo transcurrido entre la llegada de dos coches* que sigue una distribución exponencial con $\lambda = 2$ (dado que el número medio de vehículos sigue siendo el especificado en el anterior ejercicio).
 
 Así, la probabilidad de que $Z$ tome un valor igual o menor a cinco es:
 
 ```{r}
 Z = 5
 
-pZlte5 = pexp(Z, lambda)
-pZlte5
+pZmenor5 = pexp(Z, lambda)
+pZmenor5 #En realidad, menor o igual que
 ```
 
 Pero como en realidad se pide que el tiempo transcurrido sea superior a cinco:
 
 ```{r}
-pZgt5 = 1 - pZlte5
-pZgt5
+pZmayor5 = 1 - pZmenor5
+pZmayor5
 ```
 
 Que en tanto por ciento equivale al valor obtenido en el segundo apartado del anterior ejercicio:
 
 ```{r}
-pZgt5_porc = round(pZgt5 * 100, 4)
-pZgt5_porc
+pZmayor5Porc = round(pZmayor5 * 100, 4)
+pZmayor5Porc
 ```

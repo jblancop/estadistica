@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(gtools)
 ```
 
-# Ejercicio IV.1.
+# Ejercicio IV.1
 
 ### En un instituto, los alumnos de segundo de bachillerato deciden realizar un sorteo para el viaje de fin de curso; para numerar las papeletas, utilizan únicamente los dígitos 1, 2, 3, 4 y 5. Cuántas papeletas distintas de cuatro dígitos podrán vender si:
 

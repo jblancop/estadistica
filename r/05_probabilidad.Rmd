@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Ejercicio V.3.
+# Ejercicio V.3
 
 ### Para un sistema de alarma, la probabilidad de que funcione en caso de peligro es de 0,95, mientras que la de que funcione por error -sin que haya peligro- es de 0,03. Si la probabilidad de que haya peligro es de 0,1:
 

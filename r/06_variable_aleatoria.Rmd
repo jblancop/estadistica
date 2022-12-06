@@ -11,7 +11,7 @@ library(Ryacas)
 library(Deriv)
 ```
 
-# Ejercicio VI.1.
+# Ejercicio VI.1
 
 ### La función de distribución asociada a la producción de una máquina, en miles de unidades, es la siguiente:
 
@@ -135,14 +135,14 @@ var
 A partir de la función de densidad:
 
 ```{r}
-pXlte500 = (integrate(function(x) 2-2*x, lower = 0, upper = 0.5)$value)
+pXmenor500 = (integrate(function(x) 2-2*x, lower = 0, upper = 0.5)$value) 
 
-pXlte500Red = round(pXlte500, 2)
-pXlte500Red
+pXmenor500Red = round(pXmenor500, 2)
+pXmenor500Red #En realidad es menor o igual que
 
-pXgt250 = 1 - (integrate(function(x) 2-2*x, lower = 0, upper = 0.25)$value)
+pXmayor250 = 1 - (integrate(function(x) 2-2*x, lower = 0, upper = 0.25)$value)
 
-pXgt250Red = round(pXgt250, 2)
-pXgt250Red
+pXmayor250Red = round(pXmayor250, 2)
+pXmayor250Red
 ```
 
