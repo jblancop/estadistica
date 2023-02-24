@@ -63,8 +63,8 @@ mu
 ### b) *Calcular la varianza*
 
 ```{r}
-sigma_dos = sum(xi^2 * pxi) - mu^2
+sigmaDos = sum(xi^2 * pxi) - mu^2
 
-sigma_dos_red = round(sigma_dos, 2)
-sigma_dos_red
+sigmaDosRed = round(sigmaDos, 2)
+sigmaDosRed
 ```
