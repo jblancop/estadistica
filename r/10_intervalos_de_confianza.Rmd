@@ -3,6 +3,7 @@ title: "X. Intervalos de confianza"
 author: "Javier Blanco"
 date: "25/1/2022"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -34,10 +35,10 @@ Como la media poblacional es desconocida, se utiliza como estimador la media mue
 $$\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt{n}}} \sim N(0, 1)$$
 Si se sustituye y se despeja:
 
-$$P(\lambda_{1}\le\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt{n}}}\le\lambda_{2})=P(\bar{X}-\lambda_{1}\cdot\frac{\sigma}{\sqrt{n}}\le\mu\le\bar{X}+\lambda_{2}\cdot\frac{\sigma}{\sqrt{n}})$$
+$$P\left(\lambda_{1}\le\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt{n}}}\le\lambda_{2}\right)=P\left(\bar{X}-\lambda_{1}\cdot\frac{\sigma}{\sqrt{n}}\le\mu\le\bar{X}+\lambda_{2}\cdot\frac{\sigma}{\sqrt{n}}\right)$$
 Por tanto, la media poblacional se encontrará dentro de un intervalo de confianza tal que:
 
-$$IC_{1-\alpha}(\mu)=[\bar{X}-\lambda_{1}\cdot\frac{\sigma}{\sqrt{n}}; \bar{X}+\lambda_{2}\cdot\frac{\sigma}{\sqrt{n}}]$$
+$$IC_{1-\alpha}(\mu)=\left[\bar{X}-\lambda_{1}\cdot\frac{\sigma}{\sqrt{n}}; \bar{X}+\lambda_{2}\cdot\frac{\sigma}{\sqrt{n}}\right]$$
 
 Dada una normal tipo, las cotas serían aquellos valores que dejan entre medias un 95 % de la distribución; como ésta es simétrica respecto del eje de ordenadas, el 5 % restante se puede repartir equitativamente entre ambas colas y, por tanto, $\lambda_{1} = - \lambda_{2}$. 
 
@@ -51,16 +52,16 @@ lambda2
 Así, los extremos del intervalo $IC_{95\%}(\mu)$ resultan ser:
 
 ```{r}
-lim_inf = media - lambda2 * sigma/sqrt(n)
-lim_inf
+limInf = media - lambda2 * sigma/sqrt(n)
+limInf
 
-lim_sup = media + lambda2 * sigma/sqrt(n)
-lim_sup
+limSup = media + lambda2 * sigma/sqrt(n)
+limSup
 ```
 
 # Ejercicio X.2
 
-### A partir de una muestra de 20 linternas cuyos periodos de duración en horas han sido 503, 480, 345, 427, 386, 432, 429, 378, 440, 434, 429, 436, 451, 466, 394, 422, 412, 507, 433 y 480, se quiere obtener un intervalo de confianza al 95 % para la vida media de una población de linternas que se distribuye normalmente.
+### A partir de una muestra de 20 linternas cuyos periodos de duración en horas han sido 503, 480, 345, 427, 386, 432, 429, 378, 440, 434, 429, 436, 451, 466, 394, 422, 412, 507, 433 y 480, se quiere obtener un intervalo de confianza al 95 % para la vida media de una población de linternas que sigue una distribución normal.
 
 Dada una VA $X$ "duración en horas de una linterna" tal que $X \sim N(\mu, \sigma)$, se desea calcular de nuevo $\mu$, pero en este caso se desconoce $\sigma$, por lo que no se puede recurrir a la tipificación de la media muestral como en el ejercicio anterior, sino que se utiliza otra función pivote, construida a partir de la combinación de $\bar{X}$ y $S^{2}_{c}$ (la cuasivarianza muestral), que se distribuye según una t de Student con $n-1$ grados de libertad:
 
@@ -68,7 +69,7 @@ $$\frac{\sqrt{n}\cdot(\bar{X}-\mu)}{S_{c}} \sim t_{n-1}$$
 
 Esto conduce al siguiente intervalo de confianza:
 
-$$IC_{1-\alpha}(\mu)=[\bar{X}-t_{n-1,~1-\frac{\alpha}{2}}\cdot\frac{S_{c}}{\sqrt{n}}; \bar{X}+t_{n-1,~1-\frac{\alpha}{2}}\cdot\frac{S_{c}}{\sqrt{n}}]$$
+$$IC_{1-\alpha}(\mu)=\left[\bar{X}-t_{n-1,~1-\frac{\alpha}{2}}\cdot\frac{S_{c}}{\sqrt{n}}; \bar{X}+t_{n-1,~1-\frac{\alpha}{2}}\cdot\frac{S_{c}}{\sqrt{n}}\right]$$
 
 De nuevo, se trabaja con un nivel de confianza del 95 %:
 
@@ -86,7 +87,7 @@ muestra = c(503, 480, 345, 427, 386, 432, 429, 378, 440, 434, 429, 436, 451, 466
 n = length(muestra)
 media = mean(muestra)
 cuasivar = var(muestra)
-cuasidt = sqrt(cuasivar)
+cuasiDT = sqrt(cuasivar)
 ```
 
 La t de Student es simétrica como la normal tipo, por lo que en este caso, para $n-1$ grados de libertad, también habría que buscar el cuantil que deja por debajo de sí una probabilidad de $1-\alpha/2$:
@@ -99,11 +100,11 @@ lambda
 Así, los extremos del intervalo $IC_{95\%}(\mu)$ resultan ser:
 
 ```{r}
-lim_inf = media - lambda * cuasidt/sqrt(n)
-lim_inf
+limInf = media - lambda * cuasiDT/sqrt(n)
+limInf
 
-lim_sup = media + lambda * cuasidt/sqrt(n)
-lim_sup
+limSup = media + lambda * cuasiDT/sqrt(n)
+limSup
 ```
 
 Por otro lado, R también permite determinar de forma automática el intervalo de confianza de la siguiente manera:
@@ -114,14 +115,14 @@ t.test(muestra, conf.level = 0.95)$conf.int
 
 # Ejercicio X.3
 
-### Se sabe que el peso por comprimido de un cierto preparado farmacéutico se distribuye según una gausiana. Con el objeto de estudiar la varianza de la distribución, se extrae una MAS de 6 elementos. Sabiendo que la varianza muestral es igual a 40, se pretende estimar la varianza poblacional mediante un intervalo de confianza al 90 %.
+### Se sabe que el peso por comprimido de un cierto preparado farmacéutico se distribuye según una normal. Con el objeto de estudiar la varianza de la distribución, se extrae una MAS de 6 elementos. Sabiendo que la varianza muestral es igual a 40, se pretende estimar la varianza poblacional mediante un intervalo de confianza al 90 %.
 
 Dada una VA $X$ "peso por comprimido de un fármaco" tal que $X \sim N(\mu, \sigma)$, se desea calcular $\sigma^{2}$ sin que se conozca $\mu$, lo que obliga a utilizar la siguiente función pivote, construida mediante el teorema de Fisher y que sigue una distribución chi-cuadrado con $n-1$ grados de libertad:
 
 $$\sum_{i=1}^{n}\frac{(X_{i}-\bar{X})}{\sigma^{2}} \sim \chi^{2}_{n-1}$$
 A partir de ella se puede llegar al siguiente intervalo de confianza:
 
-$$IC_{1-\alpha}(\sigma^{2})=[\frac{n\cdot S^{2}}{\chi^{2}_{n-1;~1-\frac{\alpha}{2}}};\frac{n\cdot S^{2}}{\chi^{2}_{n-1;~\frac{\alpha}{2}}}]=[\frac{n\cdot S^{2}}{\lambda_{2}};\frac{n\cdot S^{2}}{\lambda_{1}}]$$
+$$IC_{1-\alpha}(\sigma^{2})=\left[\frac{n\cdot S^{2}}{\chi^{2}_{n-1,~1-\frac{\alpha}{2}}},\frac{n\cdot S^{2}}{\chi^{2}_{n-1,~\frac{\alpha}{2}}}\right]=\left[\frac{n\cdot S^{2}}{\lambda_{2}},\frac{n\cdot S^{2}}{\lambda_{1}}\right]$$
 
 En este caso se trabaja al 90 % de confianza y se dispone de una muestra de $n=6$ elementos y $S^{2}=40$:
 
@@ -145,11 +146,11 @@ lambda2
 Así, los extremos del intervalo $IC_{90\%}(\sigma^{2})$ resultan ser:
 
 ```{r}
-lim_inf = n * var/lambda2
-lim_inf
+limInf = n * var/lambda2
+limInf
 
-lim_sup = n * var/lambda1
-lim_sup
+limSup = n * var/lambda1
+limSup
 ```
 
 # Ejercicio X.4
@@ -171,7 +172,8 @@ $$\frac{\hat{p}-p}{\sqrt{\frac{p\cdot(1-p)}{n}}} \xrightarrow{d} N(0, 1)$$
 
 Y a partir de la cual se puede llegar al siguiente intervalo de confianza:
 
-$$IC_{1-\alpha}(p)=[\hat{p}\pm Z_{1-\frac{\alpha}{2}}\cdot\sqrt{\frac{\hat{p}\cdot(1-\hat{p})}{n}}]$$
+$$IC_{1-\alpha}(p)=\left[\hat{p}\pm Z_{1-\frac{\alpha}{2}}\cdot\sqrt{\frac{\hat{p}\cdot(1-\hat{p})}{n}}\right]$$
+
 El cálculo del cuantil es análogo al del primer ejercicio:
 
 ```{r}
@@ -182,11 +184,11 @@ lambda
 Así, los extremos del intervalo $IC_{95\%}(p)$ resultan ser:
 
 ```{r}
-lim_inf = p - lambda * sqrt((p * (1 - p))/n)
-lim_inf
+limInf = p - lambda * sqrt((p * (1 - p))/n)
+limInf
 
-lim_sup = p + lambda * sqrt((p * (1 - p))/n)
-lim_sup
+limSup = p + lambda * sqrt((p * (1 - p))/n)
+limSup
 ```
 
 R dispone de varias formas automáticas de calcular intervalos de confianza para la proporción muestral:
