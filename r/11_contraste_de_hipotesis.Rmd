@@ -59,7 +59,7 @@ RA = c(-dc2, dc2)
 RA
 ```
 
-Por otro lado, el valor observado par el estadístico resulta ser:
+Por otro lado, el valor observado para el estadístico resulta ser:
 
 ```{r}
 d0 = (media - mu)/(sigma/sqrt(n))
