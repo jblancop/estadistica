@@ -13,7 +13,7 @@ library(BSDA)
 
 # Ejercicio XII.1
 
-### Se desea contrastar la hipótesis de normalidad de una población de la cual se ha extraído la siguiente muestra: 12,3; 11,0; 10,7; 12,4; 11,7; 13,1; 9,9; 12,6; 11,8; 10,2; y 10,5.
+### Se desea contrastar la hipótesis de normalidad de una población de la cual se ha extraído la siguiente muestra: 12,3; 11,0; 10,7; 12,4; 11,7; 13,1; 9,9; 12,6; 11,8; 10,2 y 10,5.
 
 Se toma un nivel de significación, $\alpha$, del 5 %:
 
@@ -46,7 +46,7 @@ mediana = median(muestra)
 mediana
 ```
 
-Se parte el vector muestral en dos subvectores, uno que contenga los valores superiores a la mediana y otro, los inferiores, y se ordenan de manera inversa para posteriormente poder calcular las diferencias entre los pares de valores que equidistan entre sí:
+Se parte el vector muestral en dos subvectores, uno que contenga los valores superiores a la mediana y otro con los inferiores, y se ordenan de manera inversa para posteriormente poder calcular las diferencias entre los pares de valores que equidistan entre sí:
 
 ```{r}
 submuestra1 = sort(muestra[muestra > mediana], decreasing = TRUE)
@@ -62,10 +62,10 @@ Las diferencias se multiplican por los coeficientes para obtener los valores que
 sumandos = diferencias * coeficientes
 ```
 
-Todas estas variables se pueden presentar de forma resumida en una tabla, construida como *data frame*, para facilitar su visualización:
+Todas estas variables se pueden presentar de forma resumida en una tabla, construida como marco de datos, para facilitar su visualización:
 
 ```{r results='asis'}
-tabla_resumen = 
+tablaResumen = 
 data.frame(
             submuestra1,
             submuestra2, 
@@ -75,12 +75,12 @@ data.frame(
             row.names = NULL
            )
 
-colnames(tabla_resumen) = c("$x_{n-i+1}$", "$x_{i}$", "$x_{n-i+1} - x_{i}$", 
+colnames(tablaResumen) = c("$x_{n-i+1}$", "$x_{i}$", "$x_{n-i+1} - x_{i}$", 
                             "$a_{n-i+i}$", "$(x_{n-i+1} - x_{i})(a_{n-i+i})$")
 
 print(
        xtable(
-               tabla_resumen,
+               tablaResumen,
                caption = "Tabla de Shapiro-Wilk",
                align = "cccccc"
               ),
@@ -182,28 +182,31 @@ Se determinan los valores únicos para, a partir de ellos, estimar cuales son lo
 unicos = as.numeric(levels(factor(absolutas)))
 unicos
 
-rangos = sapply(unicos, function(x) mean(which(absolutas == x)))
+rangos = sapply(unicos, function(unico) mean(which(absolutas == unico))) 
+#Calcula la media de los índices que ocupan los valores de "absolutas"
+#para cada valor "unico" (media de los unos, de los doses, etc.)
 rangos
 ```
 
 Se define la siguiente función, que permite calcular los sumatorios de los rangos promedio en función del signo del valor de las diferencias:
 
 ```{r}
-estadistico = function(diferencias_negativas_o_positivas, rangos_promedio)
+estadistico = function(diferencias, rangos) #Vector con diferencias - o + (nunca ambas)
 {
   lista = c()
   
-  for(diferencia in diferencias_negativas_o_positivas)
+  for(diferencia in diferencias)
   {
-    for(rango in rangos_promedio)
+    for(rango in rangos)
     {
-      if(abs(diferencia) == which(rangos_promedio == rango))
+      if(abs(diferencia) == which(rangos == rango)) 
       {
         lista = c(lista, rango)
       } 
     }
   }
-  
+  #Cada diferencia (en valor absoluto) sirve de índice para el rango (si es un 1, se
+  #añade un 4,5 a la lista, si es un 2, un 10,5, etc.)
   sumatorio = sum(lista)
   
   return(sumatorio)
@@ -227,12 +230,14 @@ En principio, el valor de $T_{exp}$ sería el mínimo entre $T^{-}$ y $T^{+}$:
 
 ```{r}
 Texp = min(Tneg, Tpos)
+Texp
 ```
 
 Finalmente, se calcula el número de diferencias no nulas, $n'$:
 
 ```{r}
 n = length(absolutas)
+n
 ```
 
 Si se consulta en la tabla correspondiente, el valor crítico para un nivel de significación del 5 %, $T_{`r n`; 0,05}$, resulta ser:
