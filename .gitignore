@@ -1,0 +1,12 @@
+#Ignorar el directorio de imágenes
+
+/imagenes/
+
+#Ignorar los archivos .pdf dentro de los directorios de Python y R
+
+/python/*.pdf
+/r/*.pdf
+
+#Ignorar los archivos Word en cualquier nivel
+
+/**/*.docx
